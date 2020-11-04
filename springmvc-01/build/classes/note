@@ -1,0 +1,212 @@
+1.导包
+2.写配置
+    web.xml
+    SpringMVC的配置文件
+3.测试
+
+4.SpringMVC的细节(一)
+    1.运行流程解析,客户端点击链接,发送http://localhost:8080/springmvc-01/hello请求
+    2.来Tomcat服务器
+    3.SpringMVC的前端控制器收到所有请求
+    4.来看请求地址和@RequestMapping注解中的值匹配,就找到到底使用那个累进行处理该请求
+    5.前端控制器找到目标处理器类和处理方法通过反射执行处理方法
+    6.方法执行完会有一个返回值,SpringMVC认为这个返回值就是要去的页面地址
+    7.找到方法的返回值以后用视图解析器进行拼串得到完整的页面地址
+    8.拿到页面地址,前端控制器帮我们转发到页面
+5.SpringMVC的细节(二)
+    1.@RequestMapping("/hello"):告诉SpringMVC,这个方法用来出来什么请求,
+    / 代表从当前项目下开始,处理当前项目下的hello请求, / 也可省略,也代表从当前项目开始
+    但习惯性加上,容易区分
+    2.假如不指定配置文件的位置,默认会去在/WEB-INF下找 <servlet-name>dispatcherServlet</servlet-name>
+    这个名的配置文件,就在这个项目的/WEB-INF下创建一个以<servlet-name>为名-servlet的配置文件
+6.@RequestMapping("/hello"):
+    1.写在方法上表示该方法处理那个具体的请求
+    2.写在类上表示为当前项目制定基准路径@RequestMapping("/haha"),访问路径就变为
+        http://localhost:8080/springmvc-01/haha/hello
+    3.属性的作用
+        1.method:限定请求方式  get  post  put  delete等,默认任何类型的请求都接受
+        2.params:规定请求参数
+            params={username}:发送的请求必须带username
+            params={!username};发送的请求必须不带username
+            params={username=123}:发送的请求必须带username值为123
+            params={username=123,"",""}:发送的请求必须满足以上各种规定
+        3.headers:规定请求头和params一样,可写简单的表达式
+            headers={"User-Agent=xxxxx"}:规定某个浏览器可以访问
+        4.consumes:规定请求头中的Content-type
+        5. ? 匹配一个字符,模糊和多个匹配精确优先
+        6. * 匹配任意多个字符,也可匹配一层路径,如果多层路径使用 **
+        7.@RequestMapping("/user/{id}")路径占位符,从路径中取出资源属性
+            (@PathVariable("id") Integer id)
+7.TEST请求风格
+    1.在web.xml中配置filter过滤,来接所有请求
+
+
+8.SpringMVC对入参的处理,默认参数必须带
+    1.@RequestParam:获取请求参数,(@RequestParam("user") String username)
+        相当于String username = request.getParameter("user");@RequestParam有以下属性:
+        1.value():指定要获取的参数的key
+        2.required:参数是否是必须的,值有 false  true
+        3.defaultValue:如果没有带参数,就指定一个默认值
+        4.@RequestParam("user")和@PathVariable("user")的区别:
+        5.@PathVariable("user")/book/[user]获取请求路径中的值
+        6.@RequestParam("user")/book/user?[user=admin]获取请求参数中的值
+    2.@RequestHeader:获取请求头中的值,原生的String header = request.getHeader("xxxxx");
+        1.SpringMVC获取请求如下; @RequestHeader("xxxx") String xxxx
+        2.@RequestHeader有如下的属性值
+           1.value():指定要获取的参数的key
+           2.required:参数是否是必须的,值有 false  true
+           3.defaultValue:如果没有带参数,就指定一个默认值
+    3.@CookieValue获取Cookie中的值
+        @CookieValue("session的id") String id,也有三个属性
+           1.value():指定要获取的参数的key
+           2.required:参数是否是必须的,值有 false  true
+           3.defaultValue:如果没有带参数,就指定一个默认值
+    4.如果传入的参数是一个pojo对象,Springmvc自动封装pojo对象中属性,还可以进行级联封装
+    5.可以直接传入HttpSession,HttpServletResponse,HttpServletRequest,然后设置他们的
+        属性,在页面中获取.提交后乱码解决在Tomcat中server.xml添加UTF-8,SpringMVC的乱码
+        可以再web.xml中配置
+9.SpringMVC如何将数据带到页面
+    1.Map将数据带给页面Map<k v> map.map.put("msg","您好Map将数据带到页面");
+    2.model将数据带到页面.model.addAttribute("msg","你好model将数据带到页面");
+    3.modelMap将数据带到页面.modelMap.addAttribute("msg","你好modelMap将数据带到页面");
+    4.三者的关系 {Map接口   Model spring中的接口   modelMap是类}
+        Map(Interface)              Model[interface(spring)]
+            ||                       //
+            ||                      //
+            \/                     //
+        ModelMap(class)           //
+                   \\            //
+                    \\          //
+                    ExtendedModelMap
+                           ||
+                           ||
+                           \/
+                    BindingAwareModelMap
+    三种传参的方式都是在底层使用BindingAwareModelMap(隐含模型)中保存,并且这些保存的所有数据都是放在
+    请求域中,可以在页面中获取
+    5.方法的返回值可变为ModelAndView类型,既包含页面地址(请求页面),也包含数据类型(带给页面的数据)
+    而且放在请求域中,
+10.给Session域中保存数据
+    1.使用注解@SessionAttributes(value = "msg");给BindingAwareModelMap中保存的数据,同时
+    给session中放一份,value指定保存数据时要给session中放的数据的key
+    2.不推荐使用,可能会出现异常,推荐使用原生的session的API
+
+11.SpringMVC的核心源码
+    1.DispatcherServlet处理所有请求,(继承自FrameworkServlet继承自HttpServletBean,HttpServletBean
+    	继承自HttpServlet,所有的请求处理都在FrameworkServlet的所有方法中调用本类的doService
+    	抽象方法,)
+    2.调用doDispatch()方法进行处理
+        1.getHandler():根据当前请求地址找到能处理这个请求的目标处理器
+            1.根据当前请求在handlerMapping中找到这个请求的映射信息,获取到目标处理器
+        2.getHandlerAdapter():根据当前处理器获取收到能执行这个处理器方法的适配器
+            2.按照当前处理器类,找到当前类的HandlerAdapter(适配器)
+        3.使用刚才取到的适配器(AnnotationMethodHandlerApter)执行目标方法.
+        4.目标方法执行后返回ModelAndView对象
+        5.根据ModelAndView的信息转发到具体的页面,并可以在请求域中获取ModelAndView中的模型数据.
+    3.SpringMVC的9大组件
+             1.文件上传解析器
+             public static final String MULTIPART_RESOLVER_BEAN_NAME = "multipartResolver";
+             2.区域信息解析器,和国际化有关
+             public static final String LOCALE_RESOLVER_BEAN_NAME = "localeResolver";
+             3.主题解析器
+             public static final String THEME_RESOLVER_BEAN_NAME = "themeResolver";
+             4.Handler映射信息
+             public static final String HANDLER_MAPPING_BEAN_NAME = "handlerMapping";
+             5.Handler的适配器
+             public static final String HANDLER_ADAPTER_BEAN_NAME = "handlerAdapter";
+             6.Spring的异常解析器
+             public static final String HANDLER_EXCEPTION_RESOLVER_BEAN_NAME = "handlerExceptionResolver";
+             7.SpringMVC中允许重定向携带数据的功能
+             public static final String REQUEST_TO_VIEW_NAME_TRANSLATOR_BEAN_NAME = "viewNameTranslator";
+             8.视图解析器
+             public static final String VIEW_RESOLVER_BEAN_NAME = "viewResolver";
+             public static final String FLASH_MAP_MANAGER_BEAN_NAME = "flashMapManager";
+    4.SpringMVC的参数解析
+        1.确定方法每个参数的值
+        2.标注解保存注解的信息
+        3.没标注解
+            1.看是否是原生的API
+            2.看是否是Model,Map或者ModelAndMap
+            3.都不是,看是否是简单类型:paramName
+            4.给attrName赋值,attrName(参数标了注解@xxx就是指定的,没有标注就是自定义类型的),然后确定自定义类型的参数
+                1.attrName使用参数的类型首字母小写,或者使用之前@xxxx("")的值
+                2.先看隐含模型中有没有这个attrName作为key对应的值,如果有就从隐含模型中获取并赋值
+                3.看是否是@sessionAttribute(value="XXX")标注的属性,如果是从session中拿,如果拿不到就抛出异常
+                4.不是@sessionAttributes()标注的,利用反射创建一个对象
+                5.拿到之前创建好的对象,使用数据绑定器(WebDataBinder)将请求中的每个数据绑定到这个对象中
+12.SpringMVC的视图解析器细节
+    1.转发到其他页面:如果要调到其他页面,需要重转发可使用../../或者return "forward:/hello.jsp",一定要加上 / ,
+    表示从项目根路径,
+    3.重定向到其他页面:return "redirect:/hello.jsp",
+    4.带有前缀的转发或者重定向视图解析器不会拼串
+    5.试图解析器只是为了得到视图得对象,视图对象才能真正转发(将模型数据全部放在请求域中)或者重定向到页面,视图对象才能
+    真正的渲染视图.
+13.数据格式化
+	1.@DateTimeFormat(pattern="yyyy-MM-dd"):生日日期格式化,格式为2020-08-09
+	2.@NumberFormat(pattern="#,###,###,#"):数字格式化,格式为:2.354.878.00￥
+14.数据校验
+	1.JSR303,使用
+	2.快速校验步骤
+		1.导包
+    	2.给JavaBean的属性添加校验注解
+    	3.告诉SpringMVC这个JavaBean需要校验
+    		public String saveEmp(@Valid Employee employee, BindingResult result)
+    
+15.SpringMVC和ajax的整合
+    1.导包
+    2.返回Json数据
+    	@ResponseBody响应给浏览器Json数据,将返回数据放在在响应体中,可以将数据写出去
+    
+16.拦截器   
+	1.Filter:JavaWeb
+	2.HandlerInterceptor:StringMVC的一个接口
+		1.perHandle:在目标方法运行之后调用,返回boolean,返回true,chain.doFilter放行,返回false,不放行
+		2.posHandle:在目标方法调用之后调用
+		3.afterCompletion:在整个请求完成之后,来到目标页面
+    3.配置拦截器
+17.异常处理
+	1.
+18.SpringMVC的运行流程
+	1.所有请求,前端控制器(DispatherServlet)收到请求,调用doDispath进行处理
+	2.根据HandlerMapping中保存的请求映射信息找到处理当前请求的处理器执行链(包含拦截器)
+	3.根据当前处理器找到HandlerAdapter(适配器)
+	4.拦截器的perHandler先执行
+	5.适配器执行目标方法,并返回ModelAndView
+		1.ModelAttribute注解标注的方法提前运行
+		2.执行目标方法的时候确定目标方法用的参数
+			1.看是否Model,Map以及其他的
+			2.如果是自定义类型
+				1.在隐含模型中看有没有,如果有就从隐含模型中拿
+				2.假如没有,再看是否SessionAttributes标注的属性,如果是从Session中拿,如果拿不到就抛异常
+				3.如果都不是,就利用反射创建对象
+	6.拦截器的postHandler执行
+	7.处理结果(页面渲染流程)
+		1.如果有异常使用异常处理器进行异常处理,处理完后返回ModelAndView
+		2.调用render进行页面渲染
+			1.视图解析器根据视图名得到视图对象
+			2.视图对象调用render方法
+		3.执行拦截器的afterCompletion
+				
+19.Spring和SpringMVC的整合
+	1.Spring管理逻辑组件
+	
+	2.SpringMVC管理控制器组件
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    

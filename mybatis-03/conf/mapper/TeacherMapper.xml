@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<mapper namespace="com.spring.dao.TeacherDao">
+	
+	<!-- 自定义封装规则 -->
+	<resultMap type="com.spring.pojo.Teacher" id="teacherMap">
+		<!-- 主键列 -->
+		<id property="id" column="id"/>
+		<!-- 普通列 -->
+		<result property="tName" column="tName"/>
+		<result property="cName" column="cName"/>
+		<result property="birth" column="birth"/>
+		<result property="address" column="address"/>
+	</resultMap>
+	
+	<!-- 根据id查询  查询Teacher getTeacherById(Integer id) -->
+	<select id="getTeacherById" resultMap="teacherMap">
+		select * from teacher where id = #{id}
+	</select>
+	
+	
+	
+	<!-- 按照一定的条件查询老师的信息 , List<Teacher> getTeacherByAll(Teacher teacher) 
+		动态SQL:根据传入的条件动态的拼接SQL语句,传入那个查询的条件就拼接那个SQL,,去除多余的
+		OGNL表达式:对象导航图(级联属性)
+	-->
+	<select id="getTeacherByAll" resultMap="teacherMap">
+		select * from teacher 
+		
+		<!--where:可以去除前面的and  -->
+		<where></where>
+		<!-- trim:截取字符串
+			prefix:前缀,为下面的左右sql整体添加一个前缀    
+			prefixOverrides:去掉整体字符串前面多余的字符
+			suffix:后缀,为下面的左右sql整体添加一个后缀 
+			suffixOverrides:去掉整体字符串后面多余的字符
+		 -->
+		<trim prefix="where" prefixOverrides="and"  suffixOverrides="and">
+			<!--if:判断, test:判断条件,id不能为空 ,-->
+			<if test="id != null">
+				id = #{id} and
+			</if>
+			<!-- 必须为and,或者or,关键字符 -->
+			<if test="tName != null and tName != ''">
+				tName like #{tName} and
+			</if>
+			<if test="birth != null">
+				birth &lt; #{birth} 
+			</if>
+		</trim>
+		
+	</select>
+	
+	
+	<!--查询所有老师  List<Teacher> getTeacherList() -->
+	<select id="getTeacherList" resultMap="teacherMap">
+		select * from teacher where id in
+		
+		<!-- foreach:遍历集合
+			index="" 索引.
+				如果遍历的是list,指定的变量保存的当前索引,item保存当前元素的值
+				如果遍历的是map,指定的变量保存的当前key,item保存当前元素的值
+			open="" 以什么开始
+			close="" 以什么结束
+			item="" 变量名,每次要遍历的元素起一个变量名方便引用
+			separator="":每次遍历的元素的分隔符
+			
+		 -->
+		<foreach collection="ids" item="id_item" separator="," open="(" close=")">
+			#{id_item}
+		</foreach>
+	</select>
+	
+	<!--按照一定的条件查询老师的信息 List<Teacher> getTeacherByAllChoose(Teacher teacher) -->
+	<select id="getTeacherByAllChoose" resultMap="teacherMap">
+		select * from teacher 
+		<where>
+			<choose>
+				<when test="id != null">
+					id = #{id}
+				</when>
+				<when test="tName != null and !tName.equals('')">
+					tName = #{tName}
+				</when>
+				<when test="birth != null">
+					birth = #{birth}
+				</when>
+				<otherwise>
+					1=1
+				</otherwise>
+			</choose>
+		</where>
+	</select>
+	
+	<!-- 更新老师信息 int updateTeacher(Teacher teacher) -->
+	<update id="updateTeacher">
+		update teacher 
+		<!-- set用于更新操作,代替手动的set -->
+		<set>
+			<if test="tName != null and !tName.equals('')">
+				tName = #{tName},
+			</if>
+			<if test="cName != null and !cName.equals('')">
+				cName = #{cName},
+			</if>
+			<if test="birth != null and !birth.equals('')">
+				birth = #{birth},
+			</if>
+			<if test="address != null and !address.equals('')">
+				address = #{address}
+			</if>
+		</set>
+		<where>
+			id = #{id}
+		</where>
+	</update>
+ 	
+</mapper>

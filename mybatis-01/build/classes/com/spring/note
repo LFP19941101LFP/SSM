@@ -1,0 +1,50 @@
+2020-8-26-17:30
+1.MyBatis:和数据库交互,持久化框架(SQl映射框架)
+2.Hibernate:ORM框架
+3.MyBatis流程
+	1.导包
+	2.写配置
+		1.mybatis.xml:指导mybatis正确运行的全局配置文件
+			1.
+		2.EmployeeMapper.xml:MyBatis的sql映射文件,相当于dao层的实现,并将其注册到全局配置文件中
+	3.测试
+	4.如何写xml有提示
+		1.找到dtd约束文件
+		2.绑定约束文件的位置"http://mybatis.org/dtd/mybatis-3-config.dtd约束文件
+4.细节
+	1.mybatis获取的对象是接口的代理对象,mybatis自动获取
+	2.SQLSessionFactory创建sqlSession对象,值创建一次就行
+	3.sqlSession相当于和数据库进行交互的,和数据库的一次会话,每一次会话创建一个新的sqlSession
+5.缓存:暂时的存储数据	
+	1.底层使用Map,能保存查询出的一些数据
+	2.一级缓存:线程级别的缓存,也叫本地缓存
+	3.一级缓存失效的三种情况,sqlSession级别的缓存,默认就存在.之前查询过的数据就会保存在缓存中
+		1.一级缓存失效的情况,不同的sqlSession使用不同的缓存
+		2.同一个方法,不同的查询参数.
+		3.在sqlSession期间执行一次增删改操作,会清空缓存
+		4.手动清理缓存openSession.clearCatch()
+	3.二级缓存:全局缓存,除过当前线程,sqlSession能使用外其他也可以用
+		1.二级缓存开启需要手动开启<setting name="catChEnable" value="true"
+		     配置某个dao的配置文件<cache></cache>什么都不需要写
+		2.namespcae级别的缓存
+		3.任何时候都是先看二级缓存,再看一级缓存,两者都没有就去数据库中查
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		

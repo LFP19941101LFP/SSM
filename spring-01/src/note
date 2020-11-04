@@ -1,0 +1,7 @@
+一:注意的细节
+	1. ApplicationContext:IOC容器的接口
+	2. 容器中对象的创建在容器创建完成的时候就已经创建好了
+	3. 同一个组件在ioc容器中是单实例的,容器启动完成都已经创建装备好的
+	4. 容器中如果没有这个组件就会包NoSuchBeanDefindExliption
+	5. ioc容器在创建组件对象是利用set()方法为JavaBean的属性赋值
+	6. JavaBean的属性名是由getter和setter方法决定的,去掉set,后面的一串首字母小写就是属性名

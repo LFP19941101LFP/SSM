@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  
+<!-- namespace:名称空间,dao接口的全类名 -->
+<mapper namespace="com.spring.dao.EmployeeDao">
+	
+	<!-- 
+		select:表示查询操作, 
+		id:方法名,是对某个方法的实现, 
+		resultType:指定方法运行后的返回值类型 ,查询方法必须指定 ,写要操作对象实体类的全类名
+		#{id(属性名)}:取出传递过来的某个参数的值,sql语句不写分号
+	-->
+	<select id="getEmpById" resultType="Employee">
+	  select * from t_employee where id = #{id}
+	</select>
+	
+	<!-- Employee getEmpByIdAndName(@Param("id")Integer id,
+							@Param("empName")String empName);
+		1.多参数传参:
+			@Param("xxx")String xxx:使用命名参数传参,推荐使用
+		2.单参数传参:
+			基本类型:#{参数名}取值
+		3.传入JavaBean:
+			取值:#{pojo的属性名}
+		4.传入map :将多个要使用的参数封装
+		5.MyBatis的两种取值方式
+			1.#{}:参数预编译,参数的位置都是?代替,是通过预编译设置进去的
+			2.${}:不是参数预编译,是和SQL语句进行拼串,有注入风险,不安全.使用场景
+	 -->
+	<select id="getEmpByIdAndName" resultType="Employee">
+		select * from t_employee where id = #{id} and empName = #{empName}
+	</select>
+	
+	<!-- 根据id和姓名查询员工信息,多个参数使用@param约定
+		Employee getEmpByIdAndNameMap(Map<String,Object> map);
+	 -->
+	<select id="getEmpByIdAndNameMap" resultType="Employee">
+		<!-- select * from t_employee where id = #{id} and empName = #{empName} -->
+		select * from ${tableName} where id = #{id} and empName = #{empName}
+	</select>
+	
+	
+	<!-- 查询所有员工: List<Employee> getEmpByList(); -->
+	<select id="getEmpByList" resultType="Employee">
+		SELECT * FROM t_employee
+	</select>
+	
+	<!-- 查询返回值是Map的单参数传参  Map<String, Object> getEmpIdByMap(Integer id); -->
+	<select id="getEmpIdByMap" resultType="map">
+		select * from t_employee where id = #{id}
+	</select>
+	<!-- 查询返回值是Map  Map<Integer, Employee> getEmpIdByMapAll(); -->
+	<select id="getEmpIdByMapAll" resultType="Employee">
+		SELECT * FROM t_employee
+	</select>
+	
+	
+	<!-- 增加 int insertEmp(Employee employee); 
+		useGeneratedKeys:获取自增主键
+		keyProperty="id"属性值封装id属性
+	-->
+	<insert id="insertEmp" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_employee (empName,gender,email)
+		values (#{empName},#{gender},#{email})
+	</insert>
+	
+	
+	
+	
+	
+	<!-- 
+		cache-ref:和缓存有关
+		resultMap:自定义结果的封装规则
+		sql:抽取可重用的sql
+		insert、delete、update标签的属性
+			id:方法名
+			paramterType:参数类型,不用写.
+			useGeneratedKeys:获取数据库自增id的值
+			keyProperty:主键的属性
+		select:标签的属性
+			
+	 -->
+	
+	
+	
+	
+	
+	
+	
+	
+	
+</mapper>

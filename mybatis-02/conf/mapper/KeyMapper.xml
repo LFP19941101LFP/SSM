@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+  <mapper namespace="com.spring.dao.KeyDao">
+  
+  <!-- 	<resultMap type="com.spring.pojo.Key" id="myKey">
+  		<id property="id" column="id"/>
+  		<result property="keyName" column="keyName"/>
+  		<result property="lock.id" column="lid"/>
+  		级联属性的封装
+  		<result property="lock.lockName" column="lockName"/>
+  	</resultMap>
+  		 -->
+  	
+  	
+ 		<!-- association:表示联合一个对象 
+			 property="":指定一个要联合的具体对象
+			 javaType="":指定这个属性的类型,写属性的全类名 -->
+ 		<resultMap type="com.spring.pojo.Key" id="myKey">
+	  		<id property="id" column="id"/>
+	  		<result property="keyName" column="keyName"/>
+	  		<association property="lock" javaType="com.spring.pojo.Lock">
+	  			<!-- 指定主键列,普通列
+					<id/>
+					<result/> -->
+				<id property="id" column="lid"/>
+				<result property="lockName" column="lockName"/>
+	  		</association>
+  		</resultMap>
+  	
+  
+  	<!-- Key getKeyById(Integer id); -->
+  	<select id="getKeyById" resultMap="myKey">
+  		SELECT k.id,k.keyName,k.lid,l.id,l.lockName FROM `key` k
+			LEFT JOIN `lock` l
+			ON k.lid = l.id
+			where k.id =#{id}
+  	</select>
+
+  </mapper>
+  
+  
+  
+
+		

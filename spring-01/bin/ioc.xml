@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd">
+	
+	<!--
+		一个Bean标签注册一个组件(对象,类)
+		class:注册组件的全类名
+		id:组件的唯一标识,别名
+	  -->
+	<bean id="person" class="com.alibaba.spring.Person">
+		<!--
+			property标签为person的对象的属性赋值
+			name="name",指定属性名
+			valu="张三",指定属性的值 
+		 -->
+		<property name="age" value="23"></property>
+		<property name="name" value="张三"></property>
+		<property name="gender" value="男"></property>
+		<property name="phone" value="12445"></property>
+	</bean>
+	
+	<!-- 根据类型 -->
+	<bean id="person02" class="com.alibaba.spring.Person">
+		<property name="name" value="小花"></property>
+	</bean>
+	
+	<!--构造方法  -->
+	<bean id="person03" class="com.alibaba.spring.Person">
+		<constructor-arg name="name" value="徐小明"></constructor-arg>
+		<constructor-arg name="age" value="23"></constructor-arg>
+		<constructor-arg name="gender" value="男"></constructor-arg>
+		<constructor-arg name="phone" value="1224"></constructor-arg>
+	</bean>
+	
+	<!-- p名称空间 ,1.导入p命名空间,2.使用-->
+	<bean id="person04" class="com.alibaba.spring.Person"
+		p:age="23" p:name="李四" 
+		p:phone="1254545" p:gender="男">
+	</bean>
+	
+
+</beans>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!--properties:引用外部配置文件,如数据库连接配置文件
+		resource:从类路径下开始引用
+		url:引用磁盘路径或网络路径
+	-->
+	<properties resource="dbconfig.properties"></properties>
+	
+	<!-- 这是 MyBatis 中极为重要的调整设置，它们会改变 MyBatis 的运行时行为-->
+	<settings>
+		<!-- multipleResultSetsEnabled:开启驼峰命名规则,默认false,需要设置true -->
+		<setting name="multipleResultSetsEnabled" value="true"/>
+	</settings>
+	
+	<!-- typeAliases:为类型起别名(javabean)起别名 ,默认是类名不区分大小写-->
+	<typeAliases>
+		<!-- alias="":可以指定新的别名 -->
+		<!-- <typeAlias type="com.spring.pojo.Employee"/>  -->
+		<!-- 批量起别名,name="":指定包名 ,此包下的所有类起别名,默认就是类名-->
+		<package name="com.spring.pojo"/>
+		<!-- 推荐使用全类名 ,更加灵活-->
+	</typeAliases>
+	
+	<!-- environments:配置环境 -->
+	<environments default="development">
+		<environment id="development">
+			<transactionManager type="JDBC" />
+			<!-- 配置连接池 -->
+			<dataSource type="POOLED">
+				<property name="driver" value="${driverclass}" />
+				<property name="url" value="${jdbcurl}" />
+				<property name="username" value="${username}" />
+				<property name="password" value="${password}" />
+			</dataSource>
+		</environment>
+	</environments>
+
+	<!--引入编写的每一个接口的SQL映射文件 -->
+	<mappers>
+		<!-- 类路径开始找资源,将SQl映射文件注册到全局配置文件中
+			resource:默认使用,在类路径下引sql映射文件
+			class:直接写接口的全类名,但必须将映射文件放在和接口同包下且与接口同名.
+					如果不在同名也可使用注解在方法上标注@select、@insert、
+					@update、@delete加上sql语句的方式
+			url:从磁盘或网络路径引用 -->
+		<mapper resource="mapper/EmployeeMapper.xml" />
+		
+		<!-- 批量注册 :dao所在的包名,但是必须将源码文件的包名和到dao的包名写相同-->
+		<!-- <package name="com.spring.dao"/> -->
+	</mappers>
+	
+</configuration>

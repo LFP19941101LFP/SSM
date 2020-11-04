@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.spring.dao.CatDao">
+	<!-- 根据id查询 Cat getCatById(Integer id); -->
+	<select id="getCatById" resultMap="myCat">
+		select * from t_cat where id = #{id}
+	</select>
+
+
+	<!-- 
+		resultMap:自定义结果集,自己定义每一列数据和javaBean的映射规则
+		type:指定那个自定义JavaBean的自定义封装规则,写要分要封装的javaBean的全类名
+		id:唯一标识,别名,为自定义结果集引用
+	 -->
+	<resultMap type="com.spring.pojo.Cat" id="myCat">
+		<!--
+			id:指定主键列对应规则
+			column="id":指定那一列是主键
+			property="id":指定cat的那个属性封装id这一列
+		  -->
+		<id property="id" column="id"/>
+		
+		<!-- result:普通列
+			property="cName":JavaBean中的属性
+			column="cName":JavaBean中的属性对应的数据库的列
+		 -->
+		<result property="cName" column="cName"/>
+		<result property="cAge" column="cAge"/>
+		<result property="cGender" column="cGender"/>
+		
+	
+	</resultMap>
+</mapper>

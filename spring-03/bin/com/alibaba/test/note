@@ -1,0 +1,21 @@
+@Controller:给控制器添加
+@Service:给业务逻辑添加
+@Respository:给持久化层添加
+@Component:给以上这些组件添加扫描
+@Autowried:按照类型自动装配相对应的组件,找到就装配,找不到就报一异常。
+		        如果找到多个相同的类型，就按照id进行装配，id装配的原则是要装配组件的类名的首字母小写，
+		        如果有与其匹配的id就装配，没有报异常，找不到可以用@Qualifier指定一个新的名字去装配
+		   @Qualifier(“xxx”)：指定一个要扫锚的组件id， @Autowried就会只扫描指定id的组件
+		       如果找不到指定的id，就会报错，可以用@Autowried(required=false)表示找到指定id就装配，
+		       找不到就赋值为null
+		      
+@Resource：和	@Autowried的功能一样,都有自动装配功能
+@Resource是java规定的注解,没有required=false等功能,但是扩展性更强,离开spring也能用
+@Autowried是spring规定的注解,功能更加强大
+
+
+控制反转:将需要的组件加入添加到IOC容器中,这些组件的对象创建都是有IOC容器管理,不在需要手动的new对象
+@Controller、@Service、@Respository，这些注解就是将组件添加到容器中的注解
+依赖注入:通过@Autowried自动赋值（按照类型）,所以使用SpringIOC或AOP必须加入到容器中,容器中就包含了所有的
+
+Spring底层的容器就是一个map

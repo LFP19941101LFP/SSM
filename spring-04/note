@@ -1,0 +1,107 @@
+AOP:面向切面编程,将某段代码动态的切入到指定方法的指定位置
+日志的记录
+横切关注点
+通知方法
+切面类
+连接点
+切入点
+切入点表达式
+
+AOP的使用配置
+1.导包
+2.写配置,@Aspect表示这是一个切面类
+3.通知注解
+@After	前置通知
+@Before 后置通知
+@AfterReturning 返回通知
+@AfterThrowing 	异常通知
+@Around:环绕通知
+4.开启基于注解的AOP功能,在xml中添加AOP命名空间
+	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+	cglib创建代理对象
+5.切入点表达式
+	固定格式:execution(访问权限修饰符  返回值类型   方法的全限定名)
+	*:
+		1.匹配一个或多个字符
+		2.匹配任意一个参数
+		3.只能匹配一层路径
+		4.权限修饰符的位置不能加 * ,
+	...
+		1.匹配任意多个参数
+		2.匹配任意多个路径
+		execution(* * . *(..)):见方法就切,40米的大刀从东大街砍刀西大街   --雷丰阳
+6.通知方法的执行顺序
+	1.正常执行:@Before-->@After-->@AfterReturning
+	2.异常执行:@Before-->@After-->@AfterThrowing
+7.AOP的使用场景
+	1.AOP加日志 保存到数据库
+	2.AOP做权验证,安全检查
+	3.AOP的事务控制
+8.AOP的注解版和配置版的区别
+	1.注解版快捷方便
+	2.配置版功能完善,重要的用配置,不重要的用注解
+	
+9.事务
+	1.声明式事务:只需要告诉Spring那个方法是事务方法,Spring进行事务控制  
+		在事务的方法加上@Transaction注解即可,Spring中的专门的事务管理器(事务切面)
+		事务管理器在目标方法运行前后进行事务控制
+		配置事务管理器在ioc容器中,在事务方法添加@Transaction即可
+		1.islation—Islation：事务的隔离级别
+			脏读绝对不容许发生
+		2.propagation-Propagation:事务的传播行为
+			事物的传播和行为
+		3.noRollbackFor:那些异常事务可以不回滚
+		4.rollbackFor:那些异常事务需要回滚
+			运行时异常默认回滚.编译时异常默认不回滚
+		5.readOnly-boolean:设置事务的只读行为,进行事务优化,在只读方法中设置为true可以加快查询速度
+		6.timeOut-int:事务的超时时间,以秒为单位
+	2.编程式事务:使用Filter编写事务
+	
+	
+	
+10.Spring源码核心
+	1.AOP核心就是动态代理套动态代理再加反射(method.invock)
+	2.IOC是容器.容器启动的时候创建所有单实例对象
+		ioc容器启动的过程?启动期间都做了什么?(什么时候创建所有的单实例bean)
+		ioc是如何创建这些单实例的bean,并如何管理的保存在什么地方?
+		
+		ApplicationContext ioc = new ClassPathXmlApplicationContext("TX.xml");
+		ClassPathXmlApplicationContext("TX.xml");
+		加锁表示每次只能创建一个bean实例
+		调用三个参数的构造器,在调用refresh()方法创建了所有的Bean实例;
+		refresh()方法加了一个锁,准备一个Bean创建工厂,解析Xml文件将所有要创建Bean的信息保存起来,
+		finshBeanFactoryInitialization(beanFactory)创建所有的单实例bean,创建好的对象
+		都保存在map中
+	4.可以从容器中获取这个对象
+	
+11.ApplicationContext和BeanFactory的区别?
+	1.BeanFactory:bean工厂接口,负责创建Bean实例,容器中保存所有单实例bean实例是一个map
+	2.ApplicationContext:是容器接口,更多的负责容器功能的实现,(可以基于beanFactory创建好的对象之上完成
+	容器的功能),容器可以从map中获取这个bean,并且AOP、DI在ApplicationContext接口的下的实现类中
+	3.BeanFactory是最底层的接口是Spring本生内部要去实现标准,ApplicationContext是我们使用者使用的IOC
+	容器接口,ApplicationContext是beanFactory的子接口.
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
